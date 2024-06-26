@@ -1,5 +1,5 @@
 {
-  "name": "mud-template-react-ecs",
+  "name": "emojimon",
   "private": true,
   "scripts": {
     "build": "pnpm recursive run build",
@@ -12,8 +12,7 @@
     "test": "pnpm recursive run test"
   },
   "devDependencies": {
-    "@latticexyz/cli": "2.0.12",
-    "@latticexyz/common": "2.0.12",
+    "@latticexyz/cli": "2.0.1",
     "@types/debug": "4.1.7",
     "@typescript-eslint/eslint-plugin": "7.1.1",
     "@typescript-eslint/parser": "7.1.1",
@@ -23,7 +22,7 @@
     "typescript": "5.4.2"
   },
   "engines": {
-    "node": "^18",
-    "pnpm": "^8 || ^9"
+    "node": "18.x",
+    "pnpm": "9.x"
   }
 }
