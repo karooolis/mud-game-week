@@ -7,17 +7,41 @@ import { Direction } from "../direction";
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
-  { worldContract, waitForTransaction }: SetupNetworkResult,
-  { SyncProgress }: ClientComponents
+  {
+    playerEntity,
+    worldContract,
+    waitForTransaction,
+    waitForTransaction,
+  }: SetupNetworkResult,
+  { Player, Position, SyncProgress }: ClientComponents
 ) {
   const move = async (direction: Direction) => {
-    // TODO
-    return null as any;
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+ 
+    const position = getComponentValue(Position, playerEntity);
+    if (!position) {
+      console.warn("cannot move without a player position, not yet spawned?");
+      return;
+    }
+ 
+    const tx = await worldContract.write.move([direction]);
+    await waitForTransaction(tx);
   };
 
   const spawn = async (x: number, y: number) => {
-    // TODO
-    return null as any;
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+ 
+    const canSpawn = getComponentValue(Player, playerEntity)?.value !== true;
+    if (!canSpawn) {
+      throw new Error("already spawned");
+    }
+ 
+    const tx = await worldContract.write.spawn([x, y]);
+    await waitForTransaction(tx);
   };
 
   const throwBall = async () => {
