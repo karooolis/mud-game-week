@@ -1,8 +1,4 @@
-import "tailwindcss/tailwind.css";
-import "react-toastify/dist/ReactToastify.css";
-
 import ReactDOM from "react-dom/client";
-import { ToastContainer } from "react-toastify";
 import { App } from "./App";
 import { setup } from "./mud/setup";
 import { MUDProvider } from "./MUDContext";
@@ -17,8 +13,7 @@ setup().then(async (result) => {
   root.render(
     <MUDProvider value={result}>
       <App />
-      <ToastContainer position="bottom-right" draggable={false} theme="dark" />
-    </MUDProvider>
+    </MUDProvider>,
   );
 
   // https://vitejs.dev/guide/env-and-mode.html

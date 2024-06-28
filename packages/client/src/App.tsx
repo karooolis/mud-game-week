@@ -1,31 +1,40 @@
 import { useComponentValue } from "@latticexyz/react";
-import { SyncStep } from "@latticexyz/store-sync";
-import { singletonEntity } from "@latticexyz/store-sync/recs";
 import { useMUD } from "./MUDContext";
-import { GameBoard } from "./GameBoard";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
 
 export const App = () => {
   const {
-    components: { SyncProgress },
+    components: { Counter },
+    network: { tables, useStore },
+    systemCalls: { increment, toggleChecked },
   } = useMUD();
 
-  const loadingState = useComponentValue(SyncProgress, singletonEntity, {
-    step: SyncStep.INITIALIZE,
-    message: "Connecting",
-    percentage: 0,
-    latestBlockNumber: 0n,
-    lastBlockNumberProcessed: 0n,
+  // const counter = useComponentValue(Counter, singletonEntity);
+
+  const checkboxes = useStore((state) => {
+    const records = Object.values(state.getRecords(tables.Checkboxes));
+    // records.sort((a, b) => Number(a.value.createdAt - b.value.createdAt));
+    return records;
   });
 
+  console.log('checkboxes:', checkboxes);
+
   return (
-    <div className="w-screen h-screen flex items-center justify-center">
-      {loadingState.step !== SyncStep.LIVE ? (
-        <div>
-          {loadingState.message} ({loadingState.percentage.toFixed(2)}%)
-        </div>
-      ) : (
-        <GameBoard />
-      )}
-    </div>
+    <>
+      <h1>Hello</h1>
+
+      {/* <div>
+        Counter: <span>{counter?.value ?? "??"}</span>
+      </div>
+      <button
+        type="button"
+        onClick={async (event) => {
+          event.preventDefault();
+          console.log("new counter value:", await increment());
+        }}
+      >
+        Increment
+      </button> */}
+    </>
   );
 };

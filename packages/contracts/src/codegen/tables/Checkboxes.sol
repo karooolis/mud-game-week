@@ -16,17 +16,17 @@ import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-library Movable {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Movable", typeId: RESOURCE_TABLE });`
-  ResourceId constant _tableId = ResourceId.wrap(0x746200000000000000000000000000004d6f7661626c65000000000000000000);
+library Checkboxes {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "app", name: "Checkboxes", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x74626170700000000000000000000000436865636b626f786573000000000000);
 
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0001010001000000000000000000000000000000000000000000000000000000);
 
   // Hex-encoded key schema of (bytes32)
   Schema constant _keySchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (bool)
-  Schema constant _valueSchema = Schema.wrap(0x0001010060000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint8)
+  Schema constant _valueSchema = Schema.wrap(0x0001010000000000000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -43,7 +43,7 @@ library Movable {
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
-    fieldNames[0] = "value";
+    fieldNames[0] = "checked";
   }
 
   /**
@@ -61,87 +61,87 @@ library Movable {
   }
 
   /**
-   * @notice Get value.
+   * @notice Get checked.
    */
-  function getValue(bytes32 id) internal view returns (bool value) {
+  function getChecked(bytes32 id) internal view returns (uint8 checked) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
+    return (uint8(bytes1(_blob)));
   }
 
   /**
-   * @notice Get value.
+   * @notice Get checked.
    */
-  function _getValue(bytes32 id) internal view returns (bool value) {
+  function _getChecked(bytes32 id) internal view returns (uint8 checked) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
+    return (uint8(bytes1(_blob)));
   }
 
   /**
-   * @notice Get value.
+   * @notice Get checked.
    */
-  function get(bytes32 id) internal view returns (bool value) {
+  function get(bytes32 id) internal view returns (uint8 checked) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
+    return (uint8(bytes1(_blob)));
   }
 
   /**
-   * @notice Get value.
+   * @notice Get checked.
    */
-  function _get(bytes32 id) internal view returns (bool value) {
+  function _get(bytes32 id) internal view returns (uint8 checked) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
+    return (uint8(bytes1(_blob)));
   }
 
   /**
-   * @notice Set value.
+   * @notice Set checked.
    */
-  function setValue(bytes32 id, bool value) internal {
+  function setChecked(bytes32 id, uint8 checked) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((checked)), _fieldLayout);
   }
 
   /**
-   * @notice Set value.
+   * @notice Set checked.
    */
-  function _setValue(bytes32 id, bool value) internal {
+  function _setChecked(bytes32 id, uint8 checked) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((checked)), _fieldLayout);
   }
 
   /**
-   * @notice Set value.
+   * @notice Set checked.
    */
-  function set(bytes32 id, bool value) internal {
+  function set(bytes32 id, uint8 checked) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((checked)), _fieldLayout);
   }
 
   /**
-   * @notice Set value.
+   * @notice Set checked.
    */
-  function _set(bytes32 id, bool value) internal {
+  function _set(bytes32 id, uint8 checked) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((checked)), _fieldLayout);
   }
 
   /**
@@ -168,8 +168,8 @@ library Movable {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(bool value) internal pure returns (bytes memory) {
-    return abi.encodePacked(value);
+  function encodeStatic(uint8 checked) internal pure returns (bytes memory) {
+    return abi.encodePacked(checked);
   }
 
   /**
@@ -178,8 +178,8 @@ library Movable {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(bool value) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
-    bytes memory _staticData = encodeStatic(value);
+  function encode(uint8 checked) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
+    bytes memory _staticData = encodeStatic(checked);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
@@ -195,17 +195,5 @@ library Movable {
     _keyTuple[0] = id;
 
     return _keyTuple;
-  }
-}
-
-/**
- * @notice Cast a value to a bool.
- * @dev Boolean values are encoded as uint8 (1 = true, 0 = false), but Solidity doesn't allow casting between uint8 and bool.
- * @param value The uint8 value to convert.
- * @return result The boolean value.
- */
-function _toBool(uint8 value) pure returns (bool result) {
-  assembly {
-    result := value
   }
 }
