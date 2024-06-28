@@ -4,12 +4,13 @@ import { uuid } from "@latticexyz/utils";
 import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
 import { Direction } from "../direction";
+import { MonsterCatchResult } from "../monsterCatchResult";
  
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
  
 export function createSystemCalls(
   { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
-  { Encounter, MapConfig, Obstruction, Player, Position }: ClientComponents,
+  { Encounter, MapConfig, MonsterCatchAttempt, Obstruction, Player, Position }: ClientComponents,
 ) {
   const wrapPosition = (x: number, y: number) => {
     const mapConfig = getComponentValue(MapConfig, singletonEntity);
@@ -108,8 +109,25 @@ export function createSystemCalls(
   };
  
   const throwBall = async () => {
-    // TODO
-    return null as any;
+    const player = playerEntity;
+    if (!player) {
+      throw new Error("no player");
+    }
+ 
+    const encounter = getComponentValue(Encounter, player);
+    if (!encounter) {
+      throw new Error("no encounter");
+    }
+ 
+    const tx = await worldContract.write.throwBall();
+    await waitForTransaction(tx);
+ 
+    const catchAttempt = getComponentValue(MonsterCatchAttempt, player);
+    if (!catchAttempt) {
+      throw new Error("no catch attempt found");
+    }
+ 
+    return catchAttempt.result as MonsterCatchResult;
   };
  
   const fleeEncounter = async () => {
