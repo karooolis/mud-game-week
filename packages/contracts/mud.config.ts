@@ -18,6 +18,7 @@ export default defineWorld({
       },
     },
     Movable: "bool",
+    Obstruction: "bool",
     Player: "bool",
     Position: {
       schema: {

@@ -5,5 +5,6 @@ pragma solidity >=0.8.24;
 
 import { MapConfig } from "./tables/MapConfig.sol";
 import { Movable } from "./tables/Movable.sol";
+import { Obstruction } from "./tables/Obstruction.sol";
 import { Player } from "./tables/Player.sol";
 import { Position, PositionData } from "./tables/Position.sol";

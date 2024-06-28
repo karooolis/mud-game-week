@@ -1,32 +1,31 @@
-import { getComponentValue } from "@latticexyz/recs";
+import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
 import { singletonEntity } from "@latticexyz/store-sync/recs";
 import { uuid } from "@latticexyz/utils";
 import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
 import { Direction } from "../direction";
-
+ 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
-
+ 
 export function createSystemCalls(
-  {
-    playerEntity,
-    worldContract,
-    waitForTransaction,
-    waitForTransaction,
-  }: SetupNetworkResult,
-  { Player, Position, SyncProgress }: ClientComponents
+  { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
+  { Obstruction, Player, Position }: ClientComponents,
 ) {
+  const isObstructed = (x: number, y: number) => {
+    return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
+  };
+ 
   const move = async (direction: Direction) => {
     if (!playerEntity) {
       throw new Error("no player");
     }
-
+ 
     const position = getComponentValue(Position, playerEntity);
     if (!position) {
       console.warn("cannot move without a player position, not yet spawned?");
       return;
     }
-
+ 
     let { x, y } = position;
     if (direction === Direction.North) {
       y -= 1;
@@ -37,13 +36,18 @@ export function createSystemCalls(
     } else if (direction === Direction.West) {
       x -= 1;
     }
-
+ 
+    if (isObstructed(x, y)) {
+      console.warn("cannot move to obstructed space");
+      return;
+    }
+ 
     const positionId = uuid();
     Position.addOverride(positionId, {
       entity: playerEntity,
       value: { x, y },
     });
-
+ 
     try {
       const tx = await worldContract.write.move([direction]);
       await waitForTransaction(tx);
@@ -51,17 +55,22 @@ export function createSystemCalls(
       Position.removeOverride(positionId);
     }
   };
-
+ 
   const spawn = async (x: number, y: number) => {
     if (!playerEntity) {
       throw new Error("no player");
     }
-
+ 
     const canSpawn = getComponentValue(Player, playerEntity)?.value !== true;
     if (!canSpawn) {
       throw new Error("already spawned");
     }
-
+ 
+    if (isObstructed(x, y)) {
+      console.warn("cannot spawn on obstructed space");
+      return;
+    }
+ 
     const positionId = uuid();
     Position.addOverride(positionId, {
       entity: playerEntity,
@@ -72,7 +81,7 @@ export function createSystemCalls(
       entity: playerEntity,
       value: { value: true },
     });
-
+ 
     try {
       const tx = await worldContract.write.spawn([x, y]);
       await waitForTransaction(tx);
@@ -81,17 +90,17 @@ export function createSystemCalls(
       Player.removeOverride(playerId);
     }
   };
-
+ 
   const throwBall = async () => {
     // TODO
     return null as any;
   };
-
+ 
   const fleeEncounter = async () => {
     // TODO
     return null as any;
   };
-
+ 
   return {
     move,
     spawn,
