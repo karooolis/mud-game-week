@@ -9,6 +9,13 @@ enum Direction {
   West
 }
 
+enum MonsterType {
+  None,
+  Eagle,
+  Rat,
+  Caterpillar
+}
+
 enum TerrainType {
   None,
   TallGrass,

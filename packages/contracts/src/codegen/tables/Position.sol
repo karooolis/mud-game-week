@@ -16,11 +16,6 @@ import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-struct PositionData {
-  int32 x;
-  int32 y;
-}
-
 library Position {
   // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Position", typeId: RESOURCE_TABLE });`
   ResourceId constant _tableId = ResourceId.wrap(0x74620000000000000000000000000000506f736974696f6e0000000000000000);
@@ -153,7 +148,7 @@ library Position {
   /**
    * @notice Get the full data.
    */
-  function get(bytes32 id) internal view returns (PositionData memory _table) {
+  function get(bytes32 id) internal view returns (int32 x, int32 y) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
@@ -168,7 +163,7 @@ library Position {
   /**
    * @notice Get the full data.
    */
-  function _get(bytes32 id) internal view returns (PositionData memory _table) {
+  function _get(bytes32 id) internal view returns (int32 x, int32 y) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
@@ -211,36 +206,6 @@ library Position {
   }
 
   /**
-   * @notice Set the full data using the data struct.
-   */
-  function set(bytes32 id, PositionData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.x, _table.y);
-
-    EncodedLengths _encodedLengths;
-    bytes memory _dynamicData;
-
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = id;
-
-    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
-  }
-
-  /**
-   * @notice Set the full data using the data struct.
-   */
-  function _set(bytes32 id, PositionData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.x, _table.y);
-
-    EncodedLengths _encodedLengths;
-    bytes memory _dynamicData;
-
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = id;
-
-    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
-  }
-
-  /**
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (int32 x, int32 y) {
@@ -255,12 +220,8 @@ library Position {
    *
    *
    */
-  function decode(
-    bytes memory _staticData,
-    EncodedLengths,
-    bytes memory
-  ) internal pure returns (PositionData memory _table) {
-    (_table.x, _table.y) = decodeStatic(_staticData);
+  function decode(bytes memory _staticData, EncodedLengths, bytes memory) internal pure returns (int32 x, int32 y) {
+    (x, y) = decodeStatic(_staticData);
   }
 
   /**
