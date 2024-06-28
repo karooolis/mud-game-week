@@ -2,8 +2,8 @@
 pragma solidity >=0.8.24;
  
 import { System } from "@latticexyz/world/src/System.sol";
-import { Encounter, Encounterable, EncounterTrigger, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
-import { Direction } from "../codegen/common.sol";
+import { Encounter, EncounterData, Encounterable, EncounterTrigger, MapConfig, Monster, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
+import { Direction, MonsterType } from "../codegen/common.sol";
 import { addressToEntityKey } from "../addressToEntityKey.sol";
 import { positionToEntityKey } from "../positionToEntityKey.sol";
  
@@ -58,5 +58,12 @@ contract MapSystem is System {
         startEncounter(player);
       }
     }
+  }
+ 
+  function startEncounter(bytes32 player) internal {
+    bytes32 monster = keccak256(abi.encode(player, blockhash(block.number - 1), block.prevrandao));
+    MonsterType monsterType = MonsterType((uint256(monster) % uint256(type(MonsterType).max)) + 1);
+    Monster.set(monster, monsterType);
+    Encounter.set(player, EncounterData({ exists: true, monster: monster, catchAttempts: 0 }));
   }
 }
