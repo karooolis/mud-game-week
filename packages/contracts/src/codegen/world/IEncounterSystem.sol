@@ -10,4 +10,6 @@ pragma solidity >=0.8.24;
  */
 interface IEncounterSystem {
   function throwBall() external;
+
+  function flee() external;
 }

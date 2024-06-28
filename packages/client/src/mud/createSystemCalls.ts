@@ -131,8 +131,8 @@ export function createSystemCalls(
   };
  
   const fleeEncounter = async () => {
-    // TODO
-    return null as any;
+    const tx = await worldContract.write.flee();
+    await waitForTransaction(tx);
   };
  
   return {
